@@ -1,5 +1,5 @@
 FROM ubuntu:latest
-LABEL maintainer="henry@toasterlint.com"
+LABEL maintainer="ryan@pnwdc.com"
 
 RUN apt-get -y update && apt-get -y dist-upgrade && apt-get -y install unzip curl wget libxml2-utils && mkdir /data && groupadd -g 1000 minecraft && useradd -u 1000 -g 1000 -r minecraft
 
