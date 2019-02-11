@@ -5,7 +5,7 @@ RESULT=$?
 
 if [ $RESULT -ne 0 ]; then
 	echo "Extracting server..."
-	unzip /opt/bedrock_server.zip -d /data
+	unzip -o /opt/bedrock_server.zip -d /data
 	md5sum /opt/bedrock_server.zip > /data/md5check
 fi
 
