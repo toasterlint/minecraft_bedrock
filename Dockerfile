@@ -1,19 +1,40 @@
-FROM ubuntu:latest
-LABEL maintainer="henry@toasterlint.com"
+FROM ubuntu:18.04
+ARG BDS_Version=latest
 
-RUN apt-get -y update && apt-get -y dist-upgrade && apt-get -y install unzip curl wget libxml2-utils && mkdir /data && groupadd -g 1000 minecraft && useradd -u 1000 -g 1000 -r minecraft
+ENV VERSION=$BDS_Version
 
-RUN wget -O /opt/bedrock_server.zip $(wget -q -O - https://minecraft.net/en-us/download/server/bedrock/ | xmllint --html --xpath '/html/body/div/div/div[3]/main/div/div/div/div/div/div/div[1]/div[2]/div/div/div[2]/div[3]/div/a' - 2>/dev/null | grep -zoP '<a[^<][^<]*href="\K[^"]+')
-ADD start.sh /opt/start.sh
-RUN chown -R minecraft:minecraft /data && chmod +x /opt/start.sh
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y unzip curl libcurl4 libssl1.0.0 && \
+    rm -rf /var/lib/apt/lists/*
 
-USER minecraft:minecraft
-RUN cd /data
+# Download and extract the bedrock server
+RUN if [ "$VERSION" = "latest" ] ; then \
+        LATEST_VERSION=$( \
+            curl -v --silent  https://www.minecraft.net/en-us/download/server/bedrock/ 2>&1 | \
+            grep -o 'https://minecraft.azureedge.net/bin-linux/[^"]*' | \
+            sed 's#.*/bedrock-server-##' | sed 's/.zip//') && \
+        export VERSION=$LATEST_VERSION && \
+        echo "Setting VERSION to $LATEST_VERSION" ; \
+    else echo "Using VERSION of $VERSION"; \
+    fi && \
+    curl https://minecraft.azureedge.net/bin-linux/bedrock-server-${VERSION}.zip --output bedrock-server.zip && \
+    unzip bedrock-server.zip -d bedrock-server && \
+    rm bedrock-server.zip
 
-VOLUME /data
-WORKDIR /data
+# Create a separate folder for configurations move the original files there and create links for the files
+RUN mkdir /bedrock-server/config && \
+    mv /bedrock-server/server.properties /bedrock-server/config && \
+    mv /bedrock-server/permissions.json /bedrock-server/config && \
+    mv /bedrock-server/whitelist.json /bedrock-server/config && \
+    ln -s /bedrock-server/config/server.properties /bedrock-server/server.properties && \
+    ln -s /bedrock-server/config/permissions.json /bedrock-server/permissions.json && \
+    ln -s /bedrock-server/config/whitelist.json /bedrock-server/whitelist.json
 
-EXPOSE 19132
 EXPOSE 19132/udp
 
-CMD ["/opt/start.sh"]
+VOLUME /bedrock-server/worlds /bedrock-server/config
+
+WORKDIR /bedrock-server
+ENV LD_LIBRARY_PATH=.
+CMD ./bedrock_server
