@@ -1,17 +1,17 @@
-FROM ubuntu:18.04
+FROM ubuntu:latest
 ARG BDS_Version=latest
 
 ENV VERSION=$BDS_Version
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y unzip curl libcurl4 libssl1.0.0 && \
+    apt-get install -y unzip curl libcurl4 libssl1.1 && \
     rm -rf /var/lib/apt/lists/*
 
 # Download and extract the bedrock server
 RUN if [ "$VERSION" = "latest" ] ; then \
         LATEST_VERSION=$( \
-            curl -v --silent  https://www.minecraft.net/en-us/download/server/bedrock/ 2>&1 | \
+            curl -v --silent -L https://www.minecraft.net/en-us/download/server/bedrock/ 2>&1 | \
             grep -o 'https://minecraft.azureedge.net/bin-linux/[^"]*' | \
             sed 's#.*/bedrock-server-##' | sed 's/.zip//') && \
         export VERSION=$LATEST_VERSION && \
