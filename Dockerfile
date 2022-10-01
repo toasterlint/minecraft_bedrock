@@ -9,6 +9,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Download and extract the bedrock server
+RUN curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0" -v --silent -L https://www.minecraft.net/en-us/download/server/bedrock/ 2>&1
 RUN if [ "$VERSION" = "latest" ] ; then \
         LATEST_VERSION=$( \
             curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0" -v --silent -L https://www.minecraft.net/en-us/download/server/bedrock/ 2>&1 | \
