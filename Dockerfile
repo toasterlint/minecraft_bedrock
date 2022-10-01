@@ -11,14 +11,14 @@ RUN apt-get update && \
 # Download and extract the bedrock server
 RUN if [ "$VERSION" = "latest" ] ; then \
         LATEST_VERSION=$( \
-            curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0" -v --silent -L https://www.minecraft.net/en-us/download/server/bedrock/ 2>&1 | \
+            curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0" -v --silent -L https://www.minecraft.net/en-us/download/server/bedrock/ 2>&1 | \
             grep -o 'https://minecraft.azureedge.net/bin-linux/[^"]*' | \
             sed 's#.*/bedrock-server-##' | sed 's/.zip//') && \
         export VERSION=$LATEST_VERSION && \
         echo "Setting VERSION to $LATEST_VERSION" ; \
     else echo "Using VERSION of $VERSION"; \
     fi && \
-    curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0" https://minecraft.azureedge.net/bin-linux/bedrock-server-${VERSION}.zip --output bedrock-server.zip && \
+    curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0" https://minecraft.azureedge.net/bin-linux/bedrock-server-${VERSION}.zip --output bedrock-server.zip && \
     cat bedrock-server.zip && \
     unzip bedrock-server.zip -d bedrock-server && \
     chmod +x bedrock-server/bedrock_server && \
