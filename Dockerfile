@@ -19,6 +19,7 @@ RUN if [ "$VERSION" = "latest" ] ; then \
     else echo "Using VERSION of $VERSION"; \
     fi && \
     curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0" https://minecraft.azureedge.net/bin-linux/bedrock-server-${VERSION}.zip --output bedrock-server.zip && \
+    cat bedrock-server.zip && \
     unzip bedrock-server.zip -d bedrock-server && \
     chmod +x bedrock-server/bedrock_server && \
     rm bedrock-server.zip
