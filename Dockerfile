@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:20.04
 ARG BDS_Version=latest
 
 ENV VERSION=$BDS_Version
