@@ -9,10 +9,9 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Download and extract the bedrock server
-RUN curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0" -v --silent -L https://www.minecraft.net/en-us/download/server/bedrock/ 2>&1
 RUN if [ "$VERSION" = "latest" ] ; then \
         LATEST_VERSION=$( \
-            curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0" -v --silent -L https://www.minecraft.net/en-us/download/server/bedrock/ 2>&1 | \
+            curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0" -v --silent -L https://www.minecraft.net/en-us/download/server/bedrock 2>&1 | \
             grep -o 'https://minecraft.azureedge.net/bin-linux/[^"]*' | \
             sed 's#.*/bedrock-server-##' | sed 's/.zip//') && \
         export VERSION=$LATEST_VERSION && \
@@ -20,16 +19,13 @@ RUN if [ "$VERSION" = "latest" ] ; then \
     else echo "Using VERSION of $VERSION"; \
     fi && \
     curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0" https://minecraft.azureedge.net/bin-linux/bedrock-server-${VERSION}.zip --output bedrock-server.zip && \
-    cat bedrock-server.zip && \
     unzip bedrock-server.zip -d bedrock-server && \
     chmod +x bedrock-server/bedrock_server && \
     rm bedrock-server.zip
 
 # Create a separate folder for configurations move the original files there and create links for the files
-RUN mkdir /bedrock-server/config && \
-    mv /bedrock-server/server.properties /bedrock-server/config && \
+RUN mv /bedrock-server/server.properties /bedrock-server/config && \
     mv /bedrock-server/permissions.json /bedrock-server/config && \
-    mv /bedrock-server/whitelist.json /bedrock-server/config && \
     ln -s /bedrock-server/config/server.properties /bedrock-server/server.properties && \
     ln -s /bedrock-server/config/permissions.json /bedrock-server/permissions.json && \
     ln -s /bedrock-server/config/whitelist.json /bedrock-server/whitelist.json
